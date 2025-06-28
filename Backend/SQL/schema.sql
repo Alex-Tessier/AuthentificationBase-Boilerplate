@@ -1,5 +1,5 @@
 CREATE TABLE Users (
-    UserId INT PRIMARY KEY IDENTITY(1,1),
+    Id INT PRIMARY KEY IDENTITY(1,1),
     UserGuid UNIQUEIDENTIFIER NOT NULL,
     UserName NVARCHAR(50) UNIQUE NOT NULL,
     Email NVARCHAR(100) UNIQUE NOT NULL,
@@ -7,6 +7,7 @@ CREATE TABLE Users (
     LastName NVARCHAR(50),
     PasswordHash NVARCHAR(MAX) NOT NULL,
     RefreshToken NVARCHAR(MAX),
-    RefreshTokenExpiration DATETIME,
-    CreatedAt DATETIME DEFAULT GETDATE()
+    RefreshTokenExpiration DATETIME2,
+    CreatedAt DATETIME2 DEFAULT SYSDATETIME()
+);
 );

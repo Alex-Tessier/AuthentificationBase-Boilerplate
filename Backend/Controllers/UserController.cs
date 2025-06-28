@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace Backend.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    [Route("/api/[controller]")]
+    public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
 
-        public UsersController(IUserService userService)
+        public UserController(IUserService userService)
         {
             _userService = userService;
         }
 
-        [HttpPost(Name = "Register")]
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerData)
         {
             if (registerData == null)
@@ -34,7 +34,7 @@ namespace Backend.Controllers
             return Ok("User registered successfully.");
         }
 
-        [HttpPost(Name = "Update")]
+        [HttpPost("Update")]
         public IActionResult Update()
         {
             return Ok("User updated successfully.");
