@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Backend.Dtos;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
         [HttpPost(Name = "Login")]
-        public IActionResult Login()
+        public IActionResult Login(LoginDTO loginData)
         {
             return Ok("User Login successfully.");
         }
