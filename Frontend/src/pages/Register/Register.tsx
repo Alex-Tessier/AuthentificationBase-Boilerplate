@@ -40,7 +40,7 @@ const Register = () => {
         {error && <div className="mb-4 text-red-500">{error}</div>}
                 <div className="mb-4">
           <label className="block mb-1">
-            Nom d'utilisateur <span className="text-red-500">*</span>
+            Username <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -52,7 +52,7 @@ const Register = () => {
         </div>
         <div className="mb-4">
           <label className="block mb-1">
-            Courriel <span className="text-red-500">*</span>
+            Email <span className="text-red-500">*</span>
           </label>
           <input
             type="email"
@@ -64,7 +64,7 @@ const Register = () => {
         </div>
                 <div className="mb-4">
           <label className="block mb-1">
-            Prénom <span className="text-red-500">*</span>
+            First Name <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -76,10 +76,10 @@ const Register = () => {
         </div>
                 <div className="mb-4">
           <label className="block mb-1">
-            Nom de famille <span className="text-red-500">*</span>
+            Last Name <span className="text-red-500">*</span>
           </label>
           <input
-            type="ematextil"
+            type="text"
             className="w-full border px-3 py-2 rounded"
             value={lastName}
             onChange={e => setLasname(e.target.value)}
@@ -88,7 +88,7 @@ const Register = () => {
         </div>
         <div className="mb-6">
           <label className="block mb-1">
-            Mot de passe <span className="text-red-500">*</span>
+            Password <span className="text-red-500">*</span>
           </label>
           <input
             type="password"
@@ -99,7 +99,7 @@ const Register = () => {
             minLength={8}
           />
         </div>
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">Soumettre</button>
+        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">Submit</button>
       </form>
     </div>
   );
