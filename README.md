@@ -1,18 +1,15 @@
-# AccessHub Boilerplate
+# AuthentificationBase-Boilerplate
 
-AccessHub : Un boilerplate complet pour démarrer vos projets .NET 9 et React 19, incluant un système d'authentification avec jeton JWT et Refresh Token.
+AuthentificationBase : A broilerplate for starting new project for .Net 9 and React 19 with user registraction and login including JWT and refresh token.
 
-## Technologies utilisées
+## Used Technology
 - .NET 9
 - React 19
 - SQL
 - Tailwind CSS
 
-## Fonctionnalités prévues
-- Chaque utilisateur pourra se connecter et aura 1 Refresh Token et 1 jeton JWT, et ne pourra donc être connecté qu'à partir d'un seul appareil à la fois. Ceci est mis en place car il n'y a pas de MFA.
-- Lorsque le jeton JWT est rafraîchi, le Refresh Token l'est également.
-- Lorsque le compte est connecté sur un autre appareil, l'ancien Refresh Token devient invalide.
-- Lorsque l'utilisateur se déconnecte du compte, le Refresh Token devient invalide.
-- Chaque utilisateur pourra avoir des rôles de sécurité et pourra faire partie d'équipes.
-- Les rôles de sécurité et les équipes pourront avoir des permissions.
-- Les permissions ne retirent pas des accès mais en donnent.
+## Planned Features
+- User will be able to log in and will have 1 Refresh Token and 1 JWT token and will only be able to connect to a device at a time. 
+- When the JWT token is refreshed, the Refresh Token is also refreshed.
+- When the account is connected from another device, the old Refresh Token becomes invalid.
+- When the user logs out of the account, the Refresh Token becomes invalid.
