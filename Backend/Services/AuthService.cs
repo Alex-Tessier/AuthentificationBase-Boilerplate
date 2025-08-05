@@ -27,15 +27,5 @@ namespace Backend.Services
             
             return user;
         }
-
-        public Task RefreshUserToken()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RevokeUserToken()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

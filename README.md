@@ -13,3 +13,9 @@ AuthentificationBase : A broilerplate for starting new project for .Net 9 and Re
 - When the JWT token is refreshed, the Refresh Token is also refreshed.
 - When the account is connected from another device, the old Refresh Token becomes invalid.
 - When the user logs out of the account, the Refresh Token becomes invalid.
+
+
+
+### Links and Documentation Used
+https://learn.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.jsonwebtokens?view=msal-web-dotnet-latest
+https://learn.microsoft.com/en-us/dotnet/api/system.identitymodel.tokens.signingcredentials?view=netframework-4.8.1
