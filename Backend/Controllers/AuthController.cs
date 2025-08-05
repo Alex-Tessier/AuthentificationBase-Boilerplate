@@ -13,25 +13,17 @@ namespace Backend.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly ITokenService _tokenService;
 
-        public AuthController(IAuthService authService, ITokenService tokenService  )
+
+        public AuthController(IAuthService authService)
         {
             _authService = authService;
-            _tokenService = tokenService;
         }
         [HttpPost("Login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDTO loginData)
         {
-            User user = await _authService.Login(loginData);
-            
-            if (user == null)
-            {
-                return Unauthorized("Invalid username or password.");
-            }
-
-            string jwtToken = _tokenService.GenetareJWTToken(user);
+            string jwtToken = await _authService.Login(loginData);
 
             return Ok(jwtToken);
         }

@@ -10,10 +10,12 @@ namespace Backend.Services
     public class AuthService : IAuthService
     {
         private readonly AppDbContext _context;
+        private readonly ITokenService _tokenService;
 
-        public AuthService(AppDbContext context)
+        public AuthService(AppDbContext context, ITokenService tokenService)
         {
             _context = context;
+            _tokenService = tokenService;
         }
 
         public async Task<User> Login(LoginDTO loginDTO)
@@ -24,8 +26,12 @@ namespace Backend.Services
             {
                 throw new UnauthorizedAccessException("Invalid username or password.");
             }
-            
-            return user;
+
+            string jwtToken = _tokenService.GenetareJWTToken(user);
+
+
+
+            return jwtToken;
         }
     }
 }
