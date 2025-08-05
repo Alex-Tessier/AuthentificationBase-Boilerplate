@@ -5,6 +5,6 @@ namespace Backend.Interfaces
 {
     public interface IAuthService
     {
-        Task<string> Login(LoginDTO loginDTO);
+        Task<(bool sucess, string message, string? jwtToken)> Login(LoginDTO loginDTO);
     }
 }

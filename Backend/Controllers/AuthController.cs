@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net;
+using System.Threading.Tasks;
 using Backend.Dtos;
 using Backend.Interfaces;
 using Backend.Models;
@@ -14,18 +15,23 @@ namespace Backend.Controllers
     {
         private readonly IAuthService _authService;
 
-
         public AuthController(IAuthService authService)
         {
             _authService = authService;
         }
+
         [HttpPost("Login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDTO loginData)
         {
-            string jwtToken = await _authService.Login(loginData);
+            var result = await _authService.Login(loginData);
 
-            return Ok(jwtToken);
+            if (!result.sucess)
+            {
+                return StatusCode((int)HttpStatusCode.Unauthorized, result.message); ;
+            }
+
+            return Ok(result.jwtToken);
         }
 
         [HttpPost("Logout")]

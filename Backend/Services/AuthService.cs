@@ -18,20 +18,16 @@ namespace Backend.Services
             _tokenService = tokenService;
         }
 
-        public async Task<User> Login(LoginDTO loginDTO)
+        public async Task<(bool sucess, string message, string? jwtToken)> Login(LoginDTO loginDTO)
         {
             User? user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == loginDTO.UserNameOrEmail || u.Email == loginDTO.UserNameOrEmail);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.PasswordHash))
             {
-                throw new UnauthorizedAccessException("Invalid username or password.");
+                return (false, "Invalid username or password.", null);
             }
 
-            string jwtToken = _tokenService.GenetareJWTToken(user);
-
-
-
-            return jwtToken;
+            return (true, "Login sucessfull", _tokenService.GenetareJWTToken(user));
         }
     }
 }

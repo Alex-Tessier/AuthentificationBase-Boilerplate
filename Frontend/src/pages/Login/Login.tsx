@@ -1,3 +1,4 @@
+import type { AxiosError } from 'axios';
 import { useState } from 'react';
 import { loginUser } from 'services/authService';
 
@@ -18,7 +19,7 @@ const Login = () => {
 
         console.log(loginResponse)
     } catch (err) {
-        setError((err as Error).message);
+        setError((err as AxiosError).response?.data as string || 'An error occurred during login');
     }
 
   };
