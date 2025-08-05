@@ -11,6 +11,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
            sqlOptions.EnableRetryOnFailure())); ;
 
 builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IAuthService, AuthService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi  

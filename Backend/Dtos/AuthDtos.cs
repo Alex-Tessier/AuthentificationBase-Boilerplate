@@ -4,7 +4,7 @@ namespace Backend.Dtos
 {
     public record LoginDTO
     (
-        [Required] string LoginIdentifier,
+        [Required] string UserNameOrEmail,
         [Required] string Password
     );
 }

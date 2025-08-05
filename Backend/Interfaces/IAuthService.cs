@@ -1,8 +1,11 @@
-﻿namespace Backend.Interfaces
+﻿using Backend.Dtos;
+using Backend.Models;
+
+namespace Backend.Interfaces
 {
     public interface IAuthService
     {
-        Task Login();
+        Task<User> Login(LoginDTO loginDTO);
         Task RefreshUserToken();
         Task RevokeUserToken();
     }

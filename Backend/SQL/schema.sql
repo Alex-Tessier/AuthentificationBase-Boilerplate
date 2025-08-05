@@ -10,4 +10,3 @@ CREATE TABLE Users (
     RefreshTokenExpiration DATETIME2,
     CreatedAt DATETIME2 DEFAULT SYSDATETIME()
 );
-);

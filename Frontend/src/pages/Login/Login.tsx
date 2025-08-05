@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import { loginUser } from 'services/authService';
 
 
 const Login = () => {
@@ -7,11 +7,11 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-        const loginResponse = axios.post('/api/login', {
+        const loginResponse = await loginUser({
           userNameOrEmail,
           password
         });
