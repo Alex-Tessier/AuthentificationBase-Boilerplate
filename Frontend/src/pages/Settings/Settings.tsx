@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
+import { logout } from '../../utils/tokenUtils';
 
 const Settings = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('jwtToken');
-
+    logout();
     navigate('/login');
   };
 
