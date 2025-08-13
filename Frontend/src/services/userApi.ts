@@ -1,6 +1,5 @@
 // src/api/userApi.ts
-import axios from 'axios';
-const API_URL = import.meta.env.VITE_API_URL;
+import { axiosInstance } from "api/axiosInstance";
 
 export interface RegisterUserDto {
   userName: string;
@@ -11,8 +10,4 @@ export interface RegisterUserDto {
 }
 
 export const registerUser = (data: RegisterUserDto) =>
-  axios.post(`${API_URL}/user/register`, data, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
+  axiosInstance.post(`/user/register`, data);
