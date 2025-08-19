@@ -20,7 +20,7 @@ const createAxiosInstance = (): AxiosInstance => {
       const token = localStorage.getItem('jwtToken');
       
       if (token) {
-        // Vérifier si le token est expiré avant de l'envoyer
+
         if (isTokenExpired(token)) {
           logout();
           window.location.href = '/login';
@@ -41,8 +41,10 @@ const createAxiosInstance = (): AxiosInstance => {
     (response) => response,
     (error: AxiosError) => {
       if (error.response?.status === 401) {
-        logout();
-        window.location.href = '/login';
+        if (window.location.pathname !== '/login') {
+          logout();
+          window.location.href = '/login';
+        }
       }
       return Promise.reject(error);
     }

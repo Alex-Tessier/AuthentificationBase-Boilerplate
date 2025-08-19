@@ -15,16 +15,13 @@ const Register = () => {
     e.preventDefault();
 
     try {
-        const registerResult = await registerUser({
+        await registerUser({
           userName,
           email,
           firstName,
           lastName,
           password
         });
-
-        console.log(registerResult); 
-        console.log("Compte créer avec succès")
 
         navigate('/login');
     } catch (err) {
