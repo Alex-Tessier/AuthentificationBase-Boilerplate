@@ -1,4 +1,5 @@
 import { axiosInstance } from "api/axiosInstance";
+import type { LoginResponse, RefreshTokenRequest } from "../types/auth";
 
 export interface AuthentificationDto {
   userNameOrEmail: string;
@@ -6,4 +7,7 @@ export interface AuthentificationDto {
 }
 
 export const loginUser = (data: AuthentificationDto) =>
-    axiosInstance.post('/auth/login', data);
+    axiosInstance.post<LoginResponse>('/auth/login', data);
+
+export const refreshToken = (data: RefreshTokenRequest) =>
+    axiosInstance.post<LoginResponse>('/auth/refreshtoken', data);

@@ -2,6 +2,7 @@ import type { AxiosError } from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from 'services/authService';
+import { saveTokens } from '../../utils/tokenUtils';
 
 
 const Login = () => {
@@ -19,8 +20,7 @@ const Login = () => {
           password
         });
 
-        const token = loginResponse.data;
-        localStorage.setItem('jwtToken', token);
+        saveTokens(loginResponse.data);
 
         navigate('/settings');
         

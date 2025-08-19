@@ -1,5 +1,6 @@
 ﻿using Backend.Data;
 using Backend.Dtos;
+using Backend.Dtos.Auth;
 using Backend.Interfaces;
 using Backend.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -11,14 +12,16 @@ namespace Backend.Services
     {
         private readonly AppDbContext _context;
         private readonly ITokenService _tokenService;
+        private readonly IConfiguration _configuration;
 
-        public AuthService(AppDbContext context, ITokenService tokenService)
+        public AuthService(AppDbContext context, ITokenService tokenService, IConfiguration configuration)
         {
             _context = context;
             _tokenService = tokenService;
+            _configuration = configuration;
         }
 
-        public async Task<(bool sucess, string message, string? jwtToken)> Login(LoginDTO loginDTO)
+        public async Task<(bool success, string message, LoginResponseDTO? loginResponse)> Login(LoginDTO loginDTO)
         {
             User? user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == loginDTO.UserNameOrEmail || u.Email == loginDTO.UserNameOrEmail);
 
@@ -27,7 +30,49 @@ namespace Backend.Services
                 return (false, "Invalid username or password.", null);
             }
 
-            return (true, "Login sucessfull", _tokenService.GenetareJWTToken(user));
+            var accessToken = _tokenService.GenetareJWTToken(user);
+            var refreshToken = _tokenService.GenerateRefreshToken();
+            
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiration = DateTime.UtcNow.AddDays(_configuration.GetValue<int>("Jwt:RefreshTokenExpirationDays", 7));
+            
+            await _context.SaveChangesAsync();
+
+            var loginResponse = new LoginResponseDTO
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                ExpiresAt = DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("Jwt:AccessTokenExpirationMinutes", 15))
+            };
+
+            return (true, "Login successful", loginResponse);
+        }
+
+        public async Task<(bool success, string message, LoginResponseDTO? loginResponse)> RefreshToken(string refreshToken)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+
+            if (user == null || !_tokenService.ValidateRefreshToken(user, refreshToken))
+            {
+                return (false, "Invalid or expired refresh token.", null);
+            }
+
+            var newAccessToken = _tokenService.GenetareJWTToken(user);
+            var newRefreshToken = _tokenService.GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiration = DateTime.UtcNow.AddDays(_configuration.GetValue<int>("Jwt:RefreshTokenExpirationDays", 7));
+            
+            await _context.SaveChangesAsync();
+
+            var loginResponse = new LoginResponseDTO
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshToken,
+                ExpiresAt = DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("Jwt:AccessTokenExpirationMinutes", 15))
+            };
+
+            return (true, "Token refreshed successfully", loginResponse);
         }
     }
 }

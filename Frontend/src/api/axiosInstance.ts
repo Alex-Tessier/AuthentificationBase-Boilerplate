@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig  } from 'axios';
-import { isTokenExpired, logout } from '../utils/tokenUtils';
+import { isTokenExpired, logout, getStoredTokens, saveTokens } from '../utils/tokenUtils';
+import { refreshToken as refreshTokenAPI } from '../services/authService';
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
@@ -16,18 +17,34 @@ const createAxiosInstance = (): AxiosInstance => {
   });
 
   instance.interceptors.request.use(
-    (config: CustomAxiosRequestConfig) => {
-      const token = localStorage.getItem('jwtToken');
+    async (config: CustomAxiosRequestConfig) => {
+      const tokens = getStoredTokens();
       
-      if (token) {
-
-        if (isTokenExpired(token)) {
-          logout();
-          window.location.href = '/login';
-          return Promise.reject(new Error('Token expired'));
+      if (tokens.accessToken) {
+        if (isTokenExpired(tokens.accessToken)) {
+          if (tokens.refreshToken && !config._retry) {
+            try {
+              config._retry = true;
+              const response = await refreshTokenAPI({ refreshToken: tokens.refreshToken });
+              saveTokens(response.data);
+              config.headers.Authorization = `Bearer ${response.data.accessToken}`;
+            } catch (error) {
+              logout();
+              if (window.location.pathname !== '/login') {
+                window.location.href = '/login';
+              }
+              return Promise.reject(new Error('Token refresh failed'));
+            }
+          } else {
+            logout();
+            if (window.location.pathname !== '/login') {
+              window.location.href = '/login';
+            }
+            return Promise.reject(new Error('Token expired'));
+          }
+        } else {
+          config.headers.Authorization = `Bearer ${tokens.accessToken}`;
         }
-        
-        config.headers.Authorization = `Bearer ${token}`;
       }
       
       return config;
@@ -37,13 +54,37 @@ const createAxiosInstance = (): AxiosInstance => {
     }
   );
 
+  // Intercepteur de réponse pour gérer les erreurs 401
   instance.interceptors.response.use(
     (response) => response,
-    (error: AxiosError) => {
-      if (error.response?.status === 401) {
-        if (window.location.pathname !== '/login') {
+    async (error: AxiosError) => {
+      const originalRequest = error.config as CustomAxiosRequestConfig;
+      
+      if (error.response?.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
+        
+        const tokens = getStoredTokens();
+        if (tokens.refreshToken) {
+          try {
+            const response = await refreshTokenAPI({ refreshToken: tokens.refreshToken });
+            saveTokens(response.data);
+            
+            // Retry the original request with the new token
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
+            }
+            return instance(originalRequest);
+          } catch (refreshError) {
+            logout();
+            if (window.location.pathname !== '/login') {
+              window.location.href = '/login';
+            }
+          }
+        } else {
           logout();
-          window.location.href = '/login';
+          if (window.location.pathname !== '/login') {
+            window.location.href = '/login';
+          }
         }
       }
       return Promise.reject(error);

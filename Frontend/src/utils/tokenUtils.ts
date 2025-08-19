@@ -1,3 +1,5 @@
+import type { LoginResponse } from '../types/auth';
+
 export interface DecodedToken {
   sub: string;
   email: string;
@@ -43,13 +45,28 @@ export const getTokenExpirationTime = (token: string): Date | null => {
 };
 
 export const isAuthenticated = (): boolean => {
-  const token = localStorage.getItem('jwtToken');
+  const token = localStorage.getItem('accessToken');
   if (!token) return false;
   
   return !isTokenExpired(token);
 };
 
+export const saveTokens = (loginResponse: LoginResponse): void => {
+  localStorage.setItem('accessToken', loginResponse.accessToken);
+  localStorage.setItem('refreshToken', loginResponse.refreshToken);
+  localStorage.setItem('tokenExpiresAt', loginResponse.expiresAt);
+};
+
+export const getStoredTokens = () => {
+  return {
+    accessToken: localStorage.getItem('accessToken'),
+    refreshToken: localStorage.getItem('refreshToken'),
+    expiresAt: localStorage.getItem('tokenExpiresAt')
+  };
+};
+
 export const logout = (): void => {
-  localStorage.removeItem('jwtToken');
-  // Vous pouvez ajouter d'autres actions de nettoyage ici si nécessaire
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('tokenExpiresAt');
 };

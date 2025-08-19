@@ -52,7 +52,16 @@ namespace Backend.Services
 
         public string GenerateRefreshToken()
         {
-            throw new NotImplementedException();
+            var randomBytes = new byte[64];
+            using var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
+            rng.GetBytes(randomBytes);
+            return Convert.ToBase64String(randomBytes);
+        }
+
+        public bool ValidateRefreshToken(User user, string refreshToken)
+        {
+            return user.RefreshToken == refreshToken && 
+                   user.RefreshTokenExpiration > DateTime.UtcNow;
         }
 
         public string RevokeRefreshToken()

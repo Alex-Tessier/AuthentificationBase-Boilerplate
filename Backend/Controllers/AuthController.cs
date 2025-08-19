@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
 using Backend.Dtos;
+using Backend.Dtos.Auth;
 using Backend.Interfaces;
 using Backend.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -26,12 +27,26 @@ namespace Backend.Controllers
         {
             var result = await _authService.Login(loginData);
 
-            if (!result.sucess)
+            if (!result.success)
             {
-                return StatusCode((int)HttpStatusCode.Unauthorized, result.message); ;
+                return StatusCode((int)HttpStatusCode.Unauthorized, result.message);
             }
 
-            return Ok(result.jwtToken);
+            return Ok(result.loginResponse);
+        }
+
+        [HttpPost("RefreshToken")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RefreshToken(RefreshTokenDTO refreshTokenData)
+        {
+            var result = await _authService.RefreshToken(refreshTokenData.RefreshToken);
+
+            if (!result.success)
+            {
+                return StatusCode((int)HttpStatusCode.Unauthorized, result.message);
+            }
+
+            return Ok(result.loginResponse);
         }
 
         [HttpPost("Logout")]
