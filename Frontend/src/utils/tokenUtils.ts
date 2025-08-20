@@ -65,8 +65,22 @@ export const getStoredTokens = () => {
   };
 };
 
-export const logout = (): void => {
+export const clearTokens = (): void => {
   localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
   localStorage.removeItem('tokenExpiresAt');
+};
+
+export const logout = async (): Promise<void> => {
+  const tokens = getStoredTokens();
+  
+  if (tokens.refreshToken) {
+    try {
+      const { logoutUser } = await import('services/authService');
+      await logoutUser({ refreshToken: tokens.refreshToken });
+    } catch (error) {
+    }
+  }
+
+  clearTokens();
 };

@@ -8,5 +8,6 @@ namespace Backend.Interfaces
     {
         Task<(bool success, string message, LoginResponseDTO? loginResponse)> Login(LoginDTO loginDTO);
         Task<(bool success, string message, LoginResponseDTO? loginResponse)> RefreshToken(string refreshToken);
+        Task<(bool success, string message)> Logout(string refreshToken);
     }
 }

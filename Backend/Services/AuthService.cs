@@ -48,6 +48,23 @@ namespace Backend.Services
             return (true, "Login successful", loginResponse);
         }
 
+        public async Task<(bool success, string message)> Logout(string refreshToken)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+
+            if (user == null)
+            {
+                return (false, "Invalid refresh token.");
+            }
+
+            user.RefreshToken = null;
+            user.RefreshTokenExpiration = DateTime.UtcNow - TimeSpan.FromDays(1);
+
+            await _context.SaveChangesAsync();
+
+            return (true, "Logout successful.");
+        }
+
         public async Task<(bool success, string message, LoginResponseDTO? loginResponse)> RefreshToken(string refreshToken)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);

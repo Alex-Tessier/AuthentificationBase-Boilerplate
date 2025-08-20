@@ -1,8 +1,9 @@
 import type { AxiosError } from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from 'services/authService';
 import { saveTokens } from '../../utils/tokenUtils';
+import { useAuthError } from '../../hooks/useAuthError';
 
 
 const Login = () => {
@@ -10,6 +11,14 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { authError, clearAuthError } = useAuthError();
+
+  useEffect(() => {
+    if (authError) {
+      setError(authError);
+      clearAuthError();
+    }
+  }, [authError, clearAuthError]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

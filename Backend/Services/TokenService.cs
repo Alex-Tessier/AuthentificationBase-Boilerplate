@@ -63,10 +63,5 @@ namespace Backend.Services
             return user.RefreshToken == refreshToken && 
                    user.RefreshTokenExpiration > DateTime.UtcNow;
         }
-
-        public string RevokeRefreshToken()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -13,10 +13,8 @@ export const useTokenExpiration = () => {
       }
     };
 
-    // Vérifier immédiatement
     checkTokenExpiration();
 
-    // Vérifier toutes les minutes
     const interval = setInterval(checkTokenExpiration, 60000);
 
     return () => clearInterval(interval);

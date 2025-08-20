@@ -11,6 +11,7 @@ export default defineConfig({
       'services': '/src/services',
       'components': '/src/components',
       'pages': '/src/pages',
+      'utils': '/src/utils',
     },
   },
 })

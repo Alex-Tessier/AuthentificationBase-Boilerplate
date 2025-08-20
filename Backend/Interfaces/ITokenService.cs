@@ -7,6 +7,5 @@ namespace Backend.Interfaces
         string GenetareJWTToken(User user);
         string GenerateRefreshToken();
         bool ValidateRefreshToken(User user, string refreshToken);
-        string RevokeRefreshToken();
     }
 }

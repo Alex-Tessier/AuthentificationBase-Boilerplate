@@ -1,12 +1,16 @@
 import { useNavigate } from 'react-router-dom';
-import { logout } from '../../utils/tokenUtils';
+import { logout } from 'utils/tokenUtils';
 
 const Settings = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      navigate('/login');
+    }
   };
 
   return (

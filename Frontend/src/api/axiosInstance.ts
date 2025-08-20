@@ -1,11 +1,25 @@
 import axios from 'axios';
 import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig  } from 'axios';
-import { isTokenExpired, logout, getStoredTokens, saveTokens } from '../utils/tokenUtils';
+import { getStoredTokens, saveTokens, clearTokens } from '../utils/tokenUtils';
 import { refreshToken as refreshTokenAPI } from '../services/authService';
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
+
+const handleAuthFailure = (errorMessage: string = 'Session expirée, veuillez vous reconnecter') => {
+  clearTokens();
+  
+  if (window.location.pathname === '/login') {
+    const event = new CustomEvent('authError', { 
+      detail: { message: errorMessage } 
+    });
+    window.dispatchEvent(event);
+    return;
+  }
+
+  window.location.href = '/login';
+};
 
 const createAxiosInstance = (): AxiosInstance => {
   const instance = axios.create({
@@ -20,31 +34,8 @@ const createAxiosInstance = (): AxiosInstance => {
     async (config: CustomAxiosRequestConfig) => {
       const tokens = getStoredTokens();
       
-      if (tokens.accessToken) {
-        if (isTokenExpired(tokens.accessToken)) {
-          if (tokens.refreshToken && !config._retry) {
-            try {
-              config._retry = true;
-              const response = await refreshTokenAPI({ refreshToken: tokens.refreshToken });
-              saveTokens(response.data);
-              config.headers.Authorization = `Bearer ${response.data.accessToken}`;
-            } catch (error) {
-              logout();
-              if (window.location.pathname !== '/login') {
-                window.location.href = '/login';
-              }
-              return Promise.reject(new Error('Token refresh failed'));
-            }
-          } else {
-            logout();
-            if (window.location.pathname !== '/login') {
-              window.location.href = '/login';
-            }
-            return Promise.reject(new Error('Token expired'));
-          }
-        } else {
-          config.headers.Authorization = `Bearer ${tokens.accessToken}`;
-        }
+      if (tokens.accessToken && !config.url?.includes('/auth/login')) {
+        config.headers.Authorization = `Bearer ${tokens.accessToken}`;
       }
       
       return config;
@@ -54,7 +45,6 @@ const createAxiosInstance = (): AxiosInstance => {
     }
   );
 
-  // Intercepteur de réponse pour gérer les erreurs 401
   instance.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
@@ -63,30 +53,33 @@ const createAxiosInstance = (): AxiosInstance => {
       if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         
+        const isAuthRequest = originalRequest.url?.includes('/auth/');
+        if (isAuthRequest) {
+          return Promise.reject(error);
+        }
+        
         const tokens = getStoredTokens();
+        
         if (tokens.refreshToken) {
           try {
             const response = await refreshTokenAPI({ refreshToken: tokens.refreshToken });
             saveTokens(response.data);
             
-            // Retry the original request with the new token
             if (originalRequest.headers) {
               originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
             }
             return instance(originalRequest);
+            
           } catch (refreshError) {
-            logout();
-            if (window.location.pathname !== '/login') {
-              window.location.href = '/login';
-            }
+            handleAuthFailure('Session expired please login again.');
+            return Promise.reject(new Error('Session expired please login again.'));
           }
         } else {
-          logout();
-          if (window.location.pathname !== '/login') {
-            window.location.href = '/login';
-          }
+          handleAuthFailure('Session expired please login again.');
+          return Promise.reject(new Error('Session expired please login again.'));
         }
       }
+      
       return Promise.reject(error);
     }
   );

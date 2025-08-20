@@ -11,3 +11,6 @@ export const loginUser = (data: AuthentificationDto) =>
 
 export const refreshToken = (data: RefreshTokenRequest) =>
     axiosInstance.post<LoginResponse>('/auth/refreshtoken', data);
+
+export const logoutUser = (data: RefreshTokenRequest) =>
+    axiosInstance.post<string>('/auth/logout', data);
