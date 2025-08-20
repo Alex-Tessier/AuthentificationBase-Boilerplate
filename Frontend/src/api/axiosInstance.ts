@@ -9,7 +9,7 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
 const handleAuthFailure = () => {
   clearTokens();
   
-  if (window.location.pathname === '/login') {
+  if (window.location.pathname === '/login' || window.location.pathname === '/register') {
     return;
   }
 
