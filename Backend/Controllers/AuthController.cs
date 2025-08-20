@@ -32,21 +32,48 @@ namespace Backend.Controllers
                 return StatusCode((int)HttpStatusCode.Unauthorized, result.message);
             }
 
-            return Ok(result.loginResponse);
+            Response.Cookies.Append(
+                "refreshToken",
+                result.loginResponse.RefreshToken,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTime.UtcNow.AddDays(7)
+                }
+            );
+
+            return Ok(new { accessToken = result.loginResponse.AccessToken, expiresAt = result.loginResponse.ExpiresAt });
         }
 
-        [HttpPost("refresh-token")]
-        [AllowAnonymous]
-        public async Task<IActionResult> RefreshToken(RefreshTokenDTO refreshTokenData)
+        [HttpPost("refreshtoken")]
+        public async Task<IActionResult> RefreshToken()
         {
-            var result = await _authService.RefreshToken(refreshTokenData.RefreshToken);
+            var refreshToken = Request.Cookies["refreshToken"];
+            if (string.IsNullOrEmpty(refreshToken))
+                return Unauthorized("No refresh token.");
+
+            var result = await _authService.RefreshToken(refreshToken);
 
             if (!result.success)
             {
                 return StatusCode((int)HttpStatusCode.Unauthorized, result.message);
             }
 
-            return Ok(result.loginResponse);
+            Response.Cookies.Append(
+                "refreshToken",
+                result.loginResponse.RefreshToken,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTime.UtcNow.AddDays(7)
+                }
+            );
+
+            return Ok(new { accessToken = result.loginResponse.AccessToken, expiresAt = result.loginResponse.ExpiresAt });
         }
 
         [HttpPost("Logout")]

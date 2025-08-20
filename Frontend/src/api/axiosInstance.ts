@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig  } from 'axios';
 import { getStoredTokens, saveTokens, clearTokens } from '../utils/tokenUtils';
+import { refreshAccessToken } from 'services/tokenRefreshService';
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
@@ -45,28 +46,26 @@ const createAxiosInstance = (): AxiosInstance => {
     async (error: AxiosError) => {
       const originalRequest = error.config as CustomAxiosRequestConfig;
       
+
       if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
-        
-        const tokens = getStoredTokens();
-        
-        if (tokens.refreshToken) {
-          try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/refresh-token`, { refreshToken: tokens.refreshToken });
-            saveTokens(response.data);
-            
+
+        try {
+          const refreshResult = await refreshAccessToken();
+          if (refreshResult && refreshResult.accessToken) {
+            saveTokens({
+              accessToken: refreshResult.accessToken,
+              expiresAt: refreshResult.expiresAt
+            });
             if (originalRequest.headers) {
-              originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
+              originalRequest.headers.Authorization = `Bearer ${refreshResult.accessToken}`;
             }
             return instance(originalRequest);
-            
-          } catch (refreshError) {
-
+          } else {
             handleAuthFailure();
             return Promise.reject(new Error('Session expired please login again.'));
           }
-        } else {
-
+        } catch (refreshError) {
           handleAuthFailure();
           return Promise.reject(new Error('Session expired please login again.'));
         }

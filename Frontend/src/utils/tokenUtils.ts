@@ -53,35 +53,22 @@ export const isAuthenticated = (): boolean => {
 
 export const saveTokens = (loginResponse: LoginResponse): void => {
   localStorage.setItem('accessToken', loginResponse.accessToken);
-  localStorage.setItem('refreshToken', loginResponse.refreshToken);
   localStorage.setItem('tokenExpiresAt', loginResponse.expiresAt);
 };
 
 export const getStoredTokens = () => {
   return {
     accessToken: localStorage.getItem('accessToken'),
-    refreshToken: localStorage.getItem('refreshToken'),
     expiresAt: localStorage.getItem('tokenExpiresAt')
   };
 };
 
 export const clearTokens = (): void => {
   localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
   localStorage.removeItem('tokenExpiresAt');
 };
 
 export const logout = async (): Promise<void> => {
-  const tokens = getStoredTokens();
-  
-  if (tokens.refreshToken) {
-    try {
-      const { logoutUser } = await import('services/authService');
-      await logoutUser({ refreshToken: tokens.refreshToken });
-    } catch (error) {
-    }
-  }
-
   clearTokens();
 
   if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {

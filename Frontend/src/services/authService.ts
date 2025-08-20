@@ -1,5 +1,6 @@
 import { axiosInstance } from "api/axiosInstance";
-import type { LoginResponse, RefreshTokenRequest } from "../types/auth";
+import type { LoginResponse } from "../types/auth";
+import axios from "axios";
 
 export interface AuthentificationDto {
   userNameOrEmail: string;
@@ -7,10 +8,8 @@ export interface AuthentificationDto {
 }
 
 export const loginUser = (data: AuthentificationDto) =>
-    axiosInstance.post<LoginResponse>('/auth/login', data);
+    axios.post<LoginResponse>(`${import.meta.env.VITE_API_URL}/auth/login`, data, { withCredentials: true});
 
-export const refreshToken = (data: RefreshTokenRequest) =>
-    axiosInstance.post<LoginResponse>('/auth/refreshtoken', data);
 
-export const logoutUser = (data: RefreshTokenRequest) =>
-    axiosInstance.post<string>('/auth/logout', data);
+export const logoutUser = () =>
+    axiosInstance.post<string>('/auth/logout',);

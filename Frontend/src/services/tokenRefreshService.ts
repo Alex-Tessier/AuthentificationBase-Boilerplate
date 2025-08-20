@@ -1,21 +1,16 @@
-import { refreshToken as refreshTokenAPI } from '../services/authService';
-import { getStoredTokens, saveTokens, logout } from '../utils/tokenUtils';
+import { getStoredTokens } from '../utils/tokenUtils';
+import axios from 'axios';
 
-export const refreshAccessToken = async (): Promise<boolean> => {
-  const tokens = getStoredTokens();
-  
-  if (!tokens.refreshToken) {
-    return false;
-  }
-
+export const refreshAccessToken = async (): Promise<{ accessToken: string, expiresAt: string } | null> => {
   try {
-    const response = await refreshTokenAPI({ refreshToken: tokens.refreshToken });
-    saveTokens(response.data);
-    return true;
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/auth/refreshtoken`,
+      {},
+      { withCredentials: true }
+    );
+    return response.data;
   } catch (error) {
-    console.error('Failed to refresh token:', error);
-    logout();
-    return false;
+    return null;
   }
 };
 
