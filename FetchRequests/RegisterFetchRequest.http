@@ -1,0 +1,21 @@
+// Invalide Request Missing All Fields
+POST https://localhost:7113/api/user/register HTTP/1.1
+Content-Type: application/json
+
+{
+}
+
+###
+
+// Valid Request If user does not exist
+
+POST https://localhost:7113/api/user/register HTTP/1.1
+Content-Type: application/json
+
+{
+    "UserName": "testuser-1",
+    "Email": "testuser1@gmail.com",
+    "FirstName": "Bob",
+    "LastName": "Smith",
+    "Password": "password123"
+}
