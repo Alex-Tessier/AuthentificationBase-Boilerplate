@@ -35,7 +35,7 @@ namespace Backend.Controllers
             return Ok(result.loginResponse);
         }
 
-        [HttpPost("RefreshToken")]
+        [HttpPost("refresh-token")]
         [AllowAnonymous]
         public async Task<IActionResult> RefreshToken(RefreshTokenDTO refreshTokenData)
         {

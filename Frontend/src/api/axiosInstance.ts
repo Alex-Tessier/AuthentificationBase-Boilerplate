@@ -1,7 +1,6 @@
 import axios from 'axios';
 import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig  } from 'axios';
 import { getStoredTokens, saveTokens, clearTokens } from '../utils/tokenUtils';
-import { refreshToken as refreshTokenAPI } from '../services/authService';
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
@@ -49,16 +48,11 @@ const createAxiosInstance = (): AxiosInstance => {
       if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         
-        const isAuthRequest = originalRequest.url?.includes('/auth/');
-        if (isAuthRequest) {
-          return Promise.reject(error);
-        }
-        
         const tokens = getStoredTokens();
         
         if (tokens.refreshToken) {
           try {
-            const response = await refreshTokenAPI({ refreshToken: tokens.refreshToken });
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/refresh-token`, { refreshToken: tokens.refreshToken });
             saveTokens(response.data);
             
             if (originalRequest.headers) {
@@ -67,10 +61,12 @@ const createAxiosInstance = (): AxiosInstance => {
             return instance(originalRequest);
             
           } catch (refreshError) {
+
             handleAuthFailure();
             return Promise.reject(new Error('Session expired please login again.'));
           }
         } else {
+
           handleAuthFailure();
           return Promise.reject(new Error('Session expired please login again.'));
         }

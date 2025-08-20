@@ -1,6 +1,5 @@
 import { type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
-import { isAuthenticated } from '../utils/tokenUtils';
 import { useApp } from './AppContext';
 import AuthenticatedLayout from './AuthenticatedLayout';
 
@@ -9,12 +8,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isLoading } = useApp();
-
-
-  if (!isAuthenticated()) {
-    return <Navigate to="/login" replace />;
-  }
+  const { user, isLoading } = useApp();
 
   if (isLoading) {
     return (
@@ -22,6 +16,10 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         <div className="text-xl">Loading</div>
       </div>
     );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
 
   return (

@@ -41,7 +41,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet("profile")]
-        [Authorize] 
+        [Authorize]
         public async Task<IActionResult> GetUserProfile()
         {
             var userGuidClaim = User.FindFirst("UserGuid")?.Value;
