@@ -1,7 +1,7 @@
 import React from 'react';
 import type { ReactNode } from 'react';
 import { useApp } from 'components/AppContext';
-import { logout } from 'utils/tokenUtils';
+import useLogout from 'src/hooks/useLogout';
 
 interface AuthenticatedLayoutProps {
   children: ReactNode;
@@ -11,7 +11,7 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({ children }) =
   const { user } = useApp();
 
   const handleLogout = async () => {
-    await logout();
+    await useLogout();
   };
 
   return (
