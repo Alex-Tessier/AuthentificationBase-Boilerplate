@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useApp } from 'components/AppContext';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from 'services/userService';
 
@@ -10,6 +11,13 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { user, isLoading } = useApp();
+  
+    useEffect(() => {
+      if (!isLoading && user) {
+        navigate('/settings');
+      }
+    }, [user, isLoading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,6 +37,11 @@ const Register = () => {
     }
 
   };
+
+  
+  if (isLoading || user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen w-screen flex items-center justify-center">

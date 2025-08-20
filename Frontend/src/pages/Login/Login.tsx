@@ -13,7 +13,13 @@ const Login = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { authError, clearAuthError } = useAuthError();
-  const { refreshUserData } = useApp();
+  const { refreshUserData, user, isLoading } = useApp();
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      navigate('/settings');
+    }
+  }, [user, isLoading, navigate]);
 
   useEffect(() => {
     if (authError) {
@@ -31,13 +37,8 @@ const Login = () => {
           password
         });
 
-        // Sauvegarder les tokens
         saveTokens(loginResponse.data);
-
-        // Rafraîchir les données utilisateur avant de naviguer
         await refreshUserData();
-
-        // Naviguer vers la page des paramètres
         navigate('/settings');
         
     } catch (err) {
@@ -45,6 +46,10 @@ const Login = () => {
     }
 
   };
+
+  if (isLoading || user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen w-screen flex items-center justify-center">

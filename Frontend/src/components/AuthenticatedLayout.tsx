@@ -1,7 +1,7 @@
 import React from 'react';
 import type { ReactNode } from 'react';
 import { useApp } from 'components/AppContext';
-import useLogout from 'src/hooks/useLogout';
+import useLogout from '../hooks/useLogout';
 
 interface AuthenticatedLayoutProps {
   children: ReactNode;
