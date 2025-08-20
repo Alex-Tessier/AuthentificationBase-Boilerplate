@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.  
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), sqlOptions =>
-           sqlOptions.EnableRetryOnFailure())); ;
+           sqlOptions.EnableRetryOnFailure()).UseSnakeCaseNamingConvention()); ;
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secret = jwtSettings["Secret"] ?? throw new Exception("Jwt:Secret is missing in appsettings");
