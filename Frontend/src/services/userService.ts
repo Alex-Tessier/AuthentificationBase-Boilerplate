@@ -11,3 +11,6 @@ export interface RegisterUserDto {
 
 export const registerUser = (data: RegisterUserDto) =>
   axiosInstance.post(`/user/register`, data);
+
+export const getUserProfile = () =>
+  axiosInstance.get(`/user/profile`);

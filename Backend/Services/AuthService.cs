@@ -69,7 +69,7 @@ namespace Backend.Services
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
 
-            if (user == null || !_tokenService.ValidateRefreshToken(user, refreshToken))
+            if (user == null || user.RefreshToken != refreshToken || !_tokenService.ValidateRefreshToken(user, refreshToken))
             {
                 return (false, "Invalid or expired refresh token.", null);
             }

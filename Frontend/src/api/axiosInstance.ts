@@ -7,14 +7,10 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
-const handleAuthFailure = (errorMessage: string = 'Session expirée, veuillez vous reconnecter') => {
+const handleAuthFailure = () => {
   clearTokens();
   
   if (window.location.pathname === '/login') {
-    const event = new CustomEvent('authError', { 
-      detail: { message: errorMessage } 
-    });
-    window.dispatchEvent(event);
     return;
   }
 
@@ -71,11 +67,11 @@ const createAxiosInstance = (): AxiosInstance => {
             return instance(originalRequest);
             
           } catch (refreshError) {
-            handleAuthFailure('Session expired please login again.');
+            handleAuthFailure();
             return Promise.reject(new Error('Session expired please login again.'));
           }
         } else {
-          handleAuthFailure('Session expired please login again.');
+          handleAuthFailure();
           return Promise.reject(new Error('Session expired please login again.'));
         }
       }

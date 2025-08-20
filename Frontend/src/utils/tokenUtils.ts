@@ -83,4 +83,9 @@ export const logout = async (): Promise<void> => {
   }
 
   clearTokens();
+
+  if (window.location.pathname !== '/login') {
+    window.location.href = '/login';
+    return;
+  }
 };

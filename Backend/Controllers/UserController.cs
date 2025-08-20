@@ -1,9 +1,8 @@
 ﻿using Backend.Dtos;
 using Backend.Interfaces;
 using Backend.Models;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace Backend.Controllers
 {
@@ -35,9 +34,29 @@ namespace Backend.Controllers
         }
 
         [HttpPost("Update")]
+        [Authorize]
         public IActionResult Update()
         {
             return Ok("User updated successfully.");
+        }
+
+        [HttpGet("profile")]
+        [Authorize] 
+        public async Task<IActionResult> GetUserProfile()
+        {
+            var userGuidClaim = User.FindFirst("UserGuid")?.Value;
+            
+            if (string.IsNullOrEmpty(userGuidClaim) || !Guid.TryParse(userGuidClaim, out Guid userGuid))
+            {
+                return Unauthorized("Invalid token claims.");
+            }
+
+            var result = await _userService.GetUserProfile(userGuid);
+            if (!result.success)
+            {
+                return BadRequest(result.message);
+            }
+            return Ok(result.user);
         }
     }
 }

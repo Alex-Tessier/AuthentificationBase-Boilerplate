@@ -50,6 +50,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost("Logout")]
+        [Authorize]
         public async Task<IActionResult> Logout(RefreshTokenDTO refreshTokenData)
         {
             var result = await _authService.Logout(refreshTokenData.RefreshToken);
